@@ -1,75 +1,119 @@
 #include <iostream>
-#include <vector>
 #include <string>
-class Pasport
+#include <deque>
+#if 0 //CREATE A REAL STL EXAMPLE
+	#include <map>
+	#include <stack>
+	#include <vector>
+	namespace ft = std;
+#else
+	#include "map.hpp"
+	#include "stack.hpp"
+	#include "vector.hpp"
+#endif
+
+#include <stdlib.h>
+
+#define MAX_RAM 4294967296
+#define BUFFER_SIZE 4096
+struct Buffer
 {
-	private:
-
-		std::string first_name;
-		std::string last_name;
-		std::string middle_name;
-
-	public:
-		Pasport(const std::string &_first_name, const std::string &_last_name, const std::string &_middle_name) : first_name(_first_name), last_name(_last_name), middle_name(_middle_name) {};
-		~Pasport(){};
-		const std::string &getFN(){return (this->first_name);}
-		const std::string &getLN(){return (this->last_name);}
-		const std::string &getMN(){return (this->middle_name);}
-
-		void setFN(const std::string &_fn){this->first_name = _fn;}
-		void setLN(const std::string &_ln){this->last_name = _ln;}
-		void setMN(const std::string &_mn){this->middle_name = _mn;}
-
-		friend std::ostream& operator<< (std::ostream &out, const Pasport &pasport)
-		{
-			out << "Pasport: " << pasport.first_name << "\n\t " << pasport.last_name << "\n\t " << pasport.middle_name << "\n";
-			return out;
-		}
+	int idx;
+	char buff[BUFFER_SIZE];
 };
 
-class DataBase: protected Pasport
+
+#define COUNT (MAX_RAM / (int)sizeof(Buffer))
+
+template<typename T>
+class MutantStack : public ft::stack<T>
 {
-	private:
-		std::vector<Pasport *> base;
-	public:
-		DataBase(){}
-		~DataBase(){
-			std::map<Pasport *>::iterator it_begin = this->base.begin();
-			std::map<Pasport *>::iterator it_end = this->base.end();
-			while (it_begin != it_end)
-			{
-				delete it_begin->second;
-				++it_begin;
-			}
-			this->base.clear();
-		}
-		void SpellBook::learnSpell(Pasport *ps_ptr)
-		{
-			if (ps_ptr)
-				base.insert(std::pair<std::string, Pasport *>(spell_ptr->getName(), spell_ptr->clone()));
-		}
+public:
+	MutantStack() {}
+	MutantStack(const MutantStack<T>& src) { *this = src; }
+	MutantStack<T>& operator=(const MutantStack<T>& rhs) 
+	{
+		this->c = rhs.c;
+		return *this;
+	}
+	~MutantStack() {}
 
-		void SpellBook::forgetSpell(std::string const &spell_name)
-		{
-			std::map<std::string, ASpell *>::iterator it = arr_spell.find(spell_name);
-			if (it != arr_spell.end())
-				delete it->second;
-			arr_spell.erase(spell_name);
-		}
+	typedef typename ft::stack<T>::container_type::iterator iterator;
 
-		ASpell* SpellBook::createSpell(std::string const &spell_name)
-		{
-			std::map<std::string, ASpell *>::iterator it = arr_spell.find(spell_name);
-			if (it != arr_spell.end())
-				return arr_spell[spell_name];
-			return NULL;
-		}
-
+	iterator begin() { return this->c.begin(); }
+	iterator end() { return this->c.end(); }
 };
-int main(int argc, char const *argv[])
-{
-	Pasport ps("lol", "kek", "chebureck");
-	std::cout << ps;
 
-	return 0;
+int main(int argc, char** argv) {
+	if (argc != 2)
+	{
+		std::cerr << "Usage: ./test seed" << std::endl;
+		std::cerr << "Provide a seed please" << std::endl;
+		std::cerr << "Count value:" << COUNT << std::endl;
+		return 1;
+	}
+	const int seed = atoi(argv[1]);
+	srand(seed);
+
+	ft::vector<std::string> vector_str;
+	ft::vector<int> vector_int;
+	ft::stack<int> stack_int;
+	ft::vector<Buffer> vector_buffer;
+	ft::stack<Buffer, std::deque<Buffer> > Stack_deq_buffer;
+	ft::map<int, int> map_int;
+
+	for (int i = 0; i < COUNT; i++)
+	{
+		vector_buffer.push_back(Buffer());
+	}
+
+	for (int i = 0; i < COUNT; i++)
+	{
+		const int idx = rand() % COUNT;
+		vector_buffer[idx].idx = 5;
+	}
+	ft::vector<Buffer>().swap(vector_buffer);
+
+	try
+	{
+		for (int i = 0; i < COUNT; i++)
+		{
+			const int idx = rand() % COUNT;
+			vector_buffer.at(idx);
+			std::cerr << "Error: THIS VECTOR SHOULD BE EMPTY!!" <<std::endl;
+		}
+	}
+	catch(const std::exception& e)
+	{
+		//NORMAL ! :P
+	}
+	
+	for (int i = 0; i < COUNT; ++i)
+	{
+		map_int.insert(ft::make_pair(rand(), rand()));
+	}
+
+	int sum = 0;
+	for (int i = 0; i < 10000; i++)
+	{
+		int access = rand();
+		sum += map_int[access];
+	}
+	std::cout << "should be constant with the same seed: " << sum << std::endl;
+
+	{
+		ft::map<int, int> copy = map_int;
+	}
+	MutantStack<char> iterable_Stack;
+	for (char letter = 'a'; letter <= 'z'; letter++)
+		iterable_Stack.push(letter);
+	for (MutantStack<char>::iterator it = iterable_Stack.begin(); it != iterable_Stack.end(); it++)
+	{
+		std::cout << *it;
+	}
+	std::cout << std::endl;
+	return (0);
 }
+
+
+/////   c++ -Wall -Wextra -Werror -std=c++98

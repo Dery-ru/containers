@@ -1,13 +1,15 @@
 #ifndef ITERATOR_HPP
 # define ITERATOR_HPP
 
-#include <iostream>
-#include <iterator>
-#include <cstddef>
+# include <iostream>
+# include <iterator>
+# include <cstddef>
+# include "type_traits.hpp"
 
 namespace ft
 {
-	template <class Category, class T, class Distance = ptrdiff_t, class Pointer = T*, class Reference = T&>
+	template <class Category, class T, class Distance = ptrdiff_t,
+				class Pointer = T*, class Reference = T&>
 	struct iterator
 	{
 		typedef Category	iterator_category;
@@ -16,6 +18,7 @@ namespace ft
 		typedef Pointer		pointer;
 		typedef Reference	reference;
 	};
+
 	//for iterator type
 	template <class Iterator>
 	struct iterator_traits
@@ -26,6 +29,7 @@ namespace ft
 		typedef typename Iterator::reference			reference;
 		typedef typename Iterator::iterator_category	iterator_category;
 	};
+
 	//for pointers
 	template <class T>
 	struct iterator_traits<T*>
@@ -36,6 +40,7 @@ namespace ft
 		typedef T&								reference;
 		typedef std::random_access_iterator_tag	iterator_category;
 	};
+
 	//for const pointers
 	template <class T>
 	struct iterator_traits<const T*>
@@ -46,6 +51,9 @@ namespace ft
 		typedef const T&						reference;
 		typedef std::random_access_iterator_tag	iterator_category;
 	};
+
+
+
 	//reverse_iterator
 	template <class Iterator>
 	class reverse_iterator : public iterator<

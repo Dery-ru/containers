@@ -1,7 +1,6 @@
 #ifndef STACK_HPP
 # define STACK_HPP
 # include <iostream>
-# include <deque>
 #include "vector.hpp"
 
 // container_type	Тип, предоставляющий базовый контейнер для принятия stack.
@@ -26,15 +25,15 @@ namespace ft
 		typedef Container						container_type;
 		typedef typename Container::size_type	size_type;
 	
-	private:
+	protected:
 		container_type		_container;
 	
 	public:
 		explicit stack(const container_type& ctnr = container_type()) :_container(ctnr) {}
-		stack(const stack& x) : _container(x._container) {}
-		stack& operator= (const stack& x)
-		{
-			_container = x._container;
+		stack(const stack& other): _container(other._container) {}
+		stack& operator= (const stack& other) {
+			if (this != &other)
+				_container = other._container;
 			return *this;
 		}
 		~stack() {}
